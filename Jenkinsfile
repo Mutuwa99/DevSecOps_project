@@ -36,7 +36,7 @@ pipeline {
         stage('Build Noble Django Docker Image') {
             steps {
                 script {
-                    // Build and tag Docker image
+                    // Build and tag Docker image .
                     sh "docker build -t ${registry}/${DOCKER_HUB_USERNAME}/${imagename}:${imageTag} ."
                 }
             }
