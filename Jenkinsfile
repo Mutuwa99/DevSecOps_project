@@ -17,7 +17,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout Code Mutuwa code ') {
             steps {
                 script {
                     checkout scm
@@ -25,15 +25,15 @@ pipeline {
             }
         }
 
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         script {
-        //           ..  sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=micro -Dsonar.sources=. -Dsonar.host.url=http://52.90.86.108:9000 -Dsonar.login=429c7d33aff19bb3d6f3873929b789293d095618"
-        //         }
-        //     }
-        // }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=micro -Dsonar.sources=. -Dsonar.host.url=http://52.90.86.108:9000 -Dsonar.login=429c7d33aff19bb3d6f3873929b789293d095618"
+                }
+            }
+        }
 
-        stage('Build Docker Image') {
+        stage('Build Noble Django Docker Image') {
             steps {
                 script {
                     // Build and tag Docker image
