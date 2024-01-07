@@ -13,7 +13,7 @@ pipeline {
         SERVER_IP = '52.72.240.37'  // Replace with your EC2 instance's IP
         SSH_CREDENTIALS_ID = 'servekey'
 
-        CONTAINER_NAME = 'devsecops'  // Replace with your container name
+        CONTAINER_NAME = 'devsecops'  // Replace with your container name.
     }
 
     stages {
