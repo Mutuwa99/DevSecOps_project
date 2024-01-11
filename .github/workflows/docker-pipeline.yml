@@ -78,24 +78,7 @@ jobs:
           bandit -r . -f json -o bandit_results.json
           cat bandit_results.json  # Display Bandit results in the workflow log
           # Parse Bandit JSON report and create GitHub Actions annotations
-          python - <<EOF
-import json
-import os
-
-bandit_results_path = "bandit_results.json"
-
-with open(bandit_results_path, "r") as f:
-    bandit_results = json.load(f)
-
-for result in bandit_results["results"]:
-    filepath = os.path.relpath(result["filename"])
-    line = result["line"]
-    col = result["col"]
-    severity = result["issue_severity"]
-    message = result["issue_text"]
-
-    print(f"::{severity.lower()} file={filepath},line={line},col={col}::{message}")
-EOF
+          echo "::set-output name=bandit_results::$(cat bandit_results.json)"
 
   deploy:
     needs: bandit_scan
