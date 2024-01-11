@@ -1,9 +1,9 @@
-name: my github pipeline 
+name: my github pipeline
 
 on:
   push:
     branches:
-      - main  # or the branch you want to trigger the workflow on ,
+      - main  # or the branch you want to trigger the workflow on
 
 jobs:
   build:
@@ -37,14 +37,6 @@ jobs:
           echo "CONTAINER_NAME: $CONTAINER_NAME"
           docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
-      # - name: OWASP Dependency-Check Scan
-      #   run: |
-      #     docker run --rm \
-      #       -v $(pwd):/src \
-      #       owasp/dependency-check:latest \
-      #       --scan /src
-
-
       # - name: Run Trivy vulnerability scanner
       #   uses: aquasecurity/trivy-action@master
       #   with:
@@ -57,19 +49,12 @@ jobs:
       #     output: 'trivy-results.sarif'
       #     severity: 'CRITICAL,HIGH'
 
-
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'   
-
-          
       - name: Push Docker Image to Docker Hub
         run: |
           echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
           docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
-  bandit_scan:
+  codeql_analysis:
     needs: build
     runs-on: ubuntu-latest
 
@@ -77,23 +62,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Setup CodeQL
+        uses: github/codeql-action/setup@v2
         with:
-          python-version: 3.x
+          languages: python  # Adjust this based on your project's primary language
 
-      - name: Install Bandit
-        run: |
-          python -m pip install bandit
-
-      - name: Run Bandit Security Scan
-        run: |
-          bandit -r . -f json -o bandit_results.json
-          cat bandit_results.json  # Display Bandit results in the workflow log
-
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          # Adjust queries, etc. based on your project needs
+          queries: security-and-quality.qls 
 
   deploy:
-    needs: bandit_scan
+    needs: codeql_analysis
     runs-on: ubuntu-latest
 
     steps:
