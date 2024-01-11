@@ -46,7 +46,7 @@ jobs:
 
       - name: Trivy Scan
         run: |
-          docker run --rm -v $(pwd):/app -w /app aquasec/trivy --image ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} > trivy-results.json
+          docker run --rm -v $(pwd):/app -w /app aquasec/trivy  image ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} > trivy-results.json
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
