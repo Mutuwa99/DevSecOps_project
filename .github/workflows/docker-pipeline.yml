@@ -37,61 +37,27 @@ jobs:
           echo "CONTAINER_NAME: $CONTAINER_NAME"
           docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: '${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'  # Updated image reference
-      #     exit-code: '1'
-      #     ignore-unfixed: true
-      #     vuln-type: 'os,library'
-      #     format: 'template'
-      #     template: '@/contrib/sarif.tpl'
-      #     output: 'trivy-results.sarif'
-      #     severity: 'CRITICAL,HIGH'
 
       - name: Push Docker Image to Docker Hub
         run: |
           echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
           docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
-  # codeql_analysis:
-  #   needs: build
-  #   runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
+deploy:
+  needs: build
+  runs-on: ubuntu-latest
 
-  #     - name: Run CodeQL Analysis
-  #       run: |
-  #         docker run --rm \
-  #           -e CODEQL_ACTION_TOKEN \
-  #           -v "$(pwd):/usr/src" \
-  #           -w /usr/src \
-  #           ghcr.io/github/codeql-action/codeql-bundle:latest \
-  #           analyze --sarif-format \
-  #           --output=sarif-codeql.sarif \
-  #           --repository-root=$(pwd) \
-  #           /usr/src
+  steps:
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.SERVER_IP }}
+        username: ${{ env.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker stop ${CONTAINER_NAME} || true'
+          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker rm ${CONTAINER_NAME} || true'
+          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
+          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
 
-  #     - name: Upload CodeQL scan results to GitHub Security tab
-  #       uses: github/codeql-action/upload-sarif@v2
-  #       with:
-  #         sarif_file: 'sarif-codeql.sarif' 
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: ${{ env.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker stop ${CONTAINER_NAME} || true
-            docker rm ${CONTAINER_NAME} || true
-            docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
-            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
