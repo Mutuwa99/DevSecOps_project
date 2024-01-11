@@ -49,29 +49,20 @@ jobs:
 
     steps:
 
-    - name: Set up SSH
-      uses: easingthemes/ssh-agent@v0.5.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Deploy to EC2 using Rsync
-      uses: easingthemes/rsync-deploy@v1.0.0
-      with:
-        REMOTE_HOST: ${{ secrets.SERVER_IP }}
-        REMOTE_USER: ${{ secrets.REMOTE_USER }}
-        REMOTE_PORT: 22
-        SOURCE: .  # Assuming you want to sync the entire project directory
-        TARGET: /home/ubuntu/DevSecOps_project  # Adjust the target directory
-        ARGS: -avz --delete
-        EXCLUDE: '.git'  # Exclude folders you don't want to sync
-
-    - name: SSH into EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${{ secrets.SERVER_IP }} "\
-          docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
-          docker stop ${CONTAINER_NAME} || true && \
-          docker rm ${CONTAINER_NAME} || true && \
-          docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
+      - name: Set up SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: SSH into EC2 and deploy Docker container
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.REMOTE_USER }}@${{ secrets.SERVER_IP }} "\
+            docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
+            docker stop ${CONTAINER_NAME} || true && \
+            docker rm ${CONTAINER_NAME} || true && \
+            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
 
 
 
