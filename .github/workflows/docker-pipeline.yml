@@ -44,33 +44,41 @@ jobs:
       #       owasp/dependency-check:latest \
       #       --scan /src
 
-      - name: Trivy Scan
-        run: |
-          docker run --rm -v $(pwd):/app -w /app aquasec/trivy  image ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} > trivy-results.json
+    - name: Trivy Scan
+      run: |
+        docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} > trivy-results.json
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'  # Updated image reference
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        format: 'template'
+        template: '@/contrib/sarif.tpl'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Debug Info
+      run: |
+        docker info
+        docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}" ${registry}
+        docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+        docker inspect ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'   
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'   
 
           
-      - name: Push Docker Image to Docker Hub
-        run: |
-          echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
-          docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+    - name: Push Docker Image to Docker Hub
+      run: |
+        echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+        docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
   bandit_scan:
     needs: build
