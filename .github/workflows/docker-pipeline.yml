@@ -50,7 +50,7 @@ jobs:
     steps:
 
       - name: executing remote ssh commands using ssh key
-        uses: ./
+        uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.0
         with:
           host: '54.226.107.81'
           username: 'ubuntu'
