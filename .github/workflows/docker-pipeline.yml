@@ -80,7 +80,7 @@ jobs:
   #         sarif_file: 'sarif-codeql.sarif' 
 
   deploy:
-    # needs: codeql_analysis
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
