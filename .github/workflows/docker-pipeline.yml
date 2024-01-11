@@ -64,9 +64,10 @@ jobs:
       #       docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
       - name: SSH into EC2 and Run Docker Commands
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${SERVER_IP} "\
+          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${SERVER_IP} "\
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} && \
             docker pull ${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
             docker stop ${CONTAINER_NAME} || true && \
             docker rm ${CONTAINER_NAME} || true && \
             docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
+
