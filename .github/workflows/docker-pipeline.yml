@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: SSH into EC2 and deploy Docker container
         run: | 
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@50.17.57.13 "\
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@50.17.57.13 "\
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} && \
             docker pull ${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
             docker stop ${CONTAINER_NAME} || true && \
