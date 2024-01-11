@@ -88,7 +88,9 @@ jobs:
 
       - name: Run Bandit Security Scan
         run: |
-          bandit -r .
+          bandit -r . -f json -o bandit_results.json
+          cat bandit_results.json  # Display Bandit results in the workflow log
+
 
   deploy:
     needs: bandit_scan
