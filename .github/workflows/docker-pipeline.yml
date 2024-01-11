@@ -45,7 +45,8 @@ jobs:
             --scan /src \
             --format "ALL" \
             --project "My Project" \
-            --out /src/dependency-check-report.html
+            --out /tmp/dependency-check-report.html
+
 
       - name: Trivy Scan
         run: |
