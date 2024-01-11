@@ -49,15 +49,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: ${{ env.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker stop ${CONTAINER_NAME} || true'
-            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker rm ${CONTAINER_NAME} || true'
-            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
-            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
+      - name: SSH into EC2 and deploy Docker container
+        run: | 
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@50.17.57.13 "\
+            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} && \
+            docker pull ${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
+            docker stop ${CONTAINER_NAME} || true && \
+            docker rm ${CONTAINER_NAME} || true && \
+            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
+
 
