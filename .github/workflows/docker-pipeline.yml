@@ -1,0 +1,83 @@
+name: my github pipeline 
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to trigger the workflow on
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      imagename: 'devsecops_github'
+      registry: 'docker.io'
+      imageTag: 'latest'
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      REMOTE_USER: 'ubuntu'
+      SERVER_IP: '54.226.107.81'
+      CONTAINER_NAME: 'devsecops'
+
+    steps:
+      - name: Checkout Code Mutuwa code
+        uses: actions/checkout@v2
+
+      - name: Build Noble Django Docker Image
+        run: |
+          docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
+
+      - name: OWASP Dependency-Check Scan
+        run: |
+          docker run --rm \
+            -v $(pwd):/src \
+            owasp/dependency-check:latest \
+            --scan /src
+
+      - name: Trivy Scan
+        run: |
+          docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+          
+      - name: Push Docker Image to Docker Hub
+        run: |
+          echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+          docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+
+  bandit_scan:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install Bandit
+        run: |
+          python -m pip install bandit
+
+      - name: Run Bandit Security Scan
+        run: |
+          bandit -r .
+
+  deploy:
+    needs: bandit_scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker stop ${CONTAINER_NAME} || true
+            docker rm ${CONTAINER_NAME} || true
+            docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}

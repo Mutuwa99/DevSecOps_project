@@ -9,11 +9,11 @@ pipeline {
         imageTag = 'latest'
         DOCKER_HUB_USERNAME = 'mutuwa12'
 
-        REMOTE_USER = 'ubuntu'  // Replace with your EC2 instance's username
-        SERVER_IP = '52.72.240.37'  // Replace with your EC2 instance's IP
+        REMOTE_USER = 'ubuntu'  
+        SERVER_IP = '52.72.240.37'  
         SSH_CREDENTIALS_ID = 'servekey'
 
-        CONTAINER_NAME = 'devsecops'  // Replace with your container name.
+        CONTAINER_NAME = 'devsecops'  
     }
 
     stages {
