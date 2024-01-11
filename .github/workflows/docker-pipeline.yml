@@ -56,12 +56,13 @@ jobs:
           username: 'ubuntu'
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           
-      - name: executing remote ssh commands using ssh key
+      - name: executing remote ssh commands using password
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i - ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "docker login"
+          sshpass -p "idid" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "your_command_here"
         env:
           SSH_USERNAME: ubuntu  # Replace with your SSH username
           SSH_HOST: 54.226.107.81  # Replace with your server's IP
+
 
 
 
