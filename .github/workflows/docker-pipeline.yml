@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKERHUB_USERNAME: 'mutuwa12'
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       imagename: 'devsecops_github'
       registry: 'docker.io'
