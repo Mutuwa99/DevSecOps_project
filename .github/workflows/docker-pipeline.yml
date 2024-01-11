@@ -44,20 +44,20 @@ jobs:
           docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
 
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.SERVER_IP }}
-        username: ${{ env.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker stop ${CONTAINER_NAME} || true'
-          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker rm ${CONTAINER_NAME} || true'
-          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
-          ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker stop ${CONTAINER_NAME} || true'
+            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker rm ${CONTAINER_NAME} || true'
+            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
+            ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.SERVER_IP }} 'docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}'
 
