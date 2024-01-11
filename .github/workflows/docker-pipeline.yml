@@ -46,7 +46,8 @@ jobs:
 
       - name: Trivy Scan
         run: |
-          docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} --format=json > trivy-results.json
+          docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} > trivy-results.json
+
           
       - name: Push Docker Image to Docker Hub
         run: |
