@@ -3,7 +3,7 @@ name: my github pipeline
 on:
   push:
     branches:
-      - main  # or the branch you want to trigger ,the workflow on
+      - main  # or the branch you want to trigger the workflow on
 
 jobs:
   build:
@@ -37,7 +37,6 @@ jobs:
           echo "CONTAINER_NAME: $CONTAINER_NAME"
           docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
-
       - name: Push Docker Image to Docker Hub
         run: |
           echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
@@ -55,13 +54,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: SSH into EC2 and deploy Docker container
-        run: | 
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@50.17.57.13 "\
+      - name: SSH into Server and Deploy Docker Container
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${SERVER_IP} "\
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} && \
             docker pull ${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
             docker stop ${CONTAINER_NAME} || true && \
             docker rm ${CONTAINER_NAME} || true && \
             docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
-
-
