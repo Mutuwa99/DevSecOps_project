@@ -49,14 +49,18 @@ jobs:
 
     steps:
 
-      - name: executing remote ssh commands using ssh key
-        uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.0
-        with:
-          host: '54.226.107.81'
-          username: 'ubuntu'
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: '22'
-          script: whoami
+    - name: Deploy to EC2 using SSH
+      uses: easingthemes/ssh-deploy@v2
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+          docker stop ${CONTAINER_NAME} || true
+          docker rm ${CONTAINER_NAME} || true
+          docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
 
 
