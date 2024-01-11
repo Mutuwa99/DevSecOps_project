@@ -49,18 +49,29 @@ jobs:
 
     steps:
 
-    - name: Deploy to EC2 using SSH
-      uses: easingthemes/ssh-deploy@v2
+    - name: Set up SSH
+      uses: easingthemes/ssh-agent@v0.5.0
       with:
-        REMOTE_HOST: '54.226.107.81'
-        REMOTE_USER: 'ubuntu'
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to EC2 using Rsync
+      uses: easingthemes/rsync-deploy@v1.0.0
+      with:
+        REMOTE_HOST: ${{ secrets.SERVER_IP }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
         REMOTE_PORT: 22
-        script: |
-          docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
-          docker stop ${CONTAINER_NAME} || true
-          docker rm ${CONTAINER_NAME} || true
-          docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+        SOURCE: .  # Assuming you want to sync the entire project directory
+        TARGET: /home/ubuntu/DevSecOps_project  # Adjust the target directory
+        ARGS: -avz --delete
+        EXCLUDE: '.git'  # Exclude folders you don't want to sync
+
+    - name: SSH into EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${{ secrets.SERVER_IP }} "\
+          docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
+          docker stop ${CONTAINER_NAME} || true && \
+          docker rm ${CONTAINER_NAME} || true && \
+          docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
 
 
 
