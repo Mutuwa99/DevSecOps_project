@@ -49,20 +49,16 @@ jobs:
 
     steps:
 
-      - name: Set up SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: '54.226.107.81'
-          username: 'ubuntu'
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          
-      - name: executing remote ssh commands using password
-        run: |
-          sshpass -p "idid" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "your_command_here"
+      - uses: actions/checkout@v2 
+      - name: Build & Deploy
         env:
-          SSH_USERNAME: ubuntu  # Replace with your SSH username
-          SSH_HOST: 54.226.107.81  # Replace with your server's IP
-
+            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            HOSTNAME: ${{env.SERVER_IP}}
+            USER_NAME: ${{env.REMOTE_USER}}
+      
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${REMOTE_USER}@${SERVER_IP} '
 
 
 
