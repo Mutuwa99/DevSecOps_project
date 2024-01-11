@@ -49,13 +49,15 @@ jobs:
 
     steps:
 
-      - name: SSH into EC2 and Pull Docker Image
-        run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -vvv ${REMOTE_USER}@${SERVER_IP} "\
-            docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
-            docker stop ${CONTAINER_NAME} || true && \
-            docker rm ${CONTAINER_NAME} || true && \
-            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
+      - name: executing remote ssh commands using ssh key
+        uses: ./
+        with:
+          host: '54.226.107.81'
+          username: 'ubuntu'
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: '22'
+          script: whoami
+
 
 
 
