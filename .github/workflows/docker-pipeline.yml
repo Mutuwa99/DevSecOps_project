@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Noble Django Docker Image
         run: |
-          echo "DOCKERHUB_USERNAME: $DOCKERHUB_USERNAME"
+          echo "DOCKERHUB_USERNAME: $DOCKER_USERNAME"
           echo "DOCKERHUB_PASSWORD: ***"
           echo "imagename: $imagename"
           echo "registry: $registry"
