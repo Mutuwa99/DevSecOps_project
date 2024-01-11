@@ -24,23 +24,23 @@ jobs:
       - name: Checkout Code Mutuwa code
         uses: actions/checkout@v2
 
-      - name: Build Noble Django Docker Image
-        run: |
-          echo "DOCKERHUB_USERNAME: $DOCKER_USERNAME"
-          echo "DOCKERHUB_PASSWORD: ***"
-          echo "imagename: $imagename"
-          echo "registry: $registry"
-          echo "imageTag: $imageTag"
-          echo "SSH_PRIVATE_KEY: ***"
-          echo "REMOTE_USER: $REMOTE_USER"
-          echo "SERVER_IP: $SERVER_IP"
-          echo "CONTAINER_NAME: $CONTAINER_NAME"
-          docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
+      # - name: Build Noble Django Docker Image
+      #   run: |
+      #     echo "DOCKERHUB_USERNAME: $DOCKER_USERNAME"
+      #     echo "DOCKERHUB_PASSWORD: ***"
+      #     echo "imagename: $imagename"
+      #     echo "registry: $registry"
+      #     echo "imageTag: $imageTag"
+      #     echo "SSH_PRIVATE_KEY: ***"
+      #     echo "REMOTE_USER: $REMOTE_USER"
+      #     echo "SERVER_IP: $SERVER_IP"
+      #     echo "CONTAINER_NAME: $CONTAINER_NAME"
+      #     docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
-      - name: Push Docker Image to Docker Hub
-        run: |
-          echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
-          docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+      # - name: Push Docker Image to Docker Hub
+      #   run: |
+      #     echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+      #     docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
 
   deploy:
@@ -62,12 +62,11 @@ jobs:
       #       docker stop ${CONTAINER_NAME} || true && \
       #       docker rm ${CONTAINER_NAME} || true && \
       #       docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
-      - name: SSH into EC2 and Run Docker Commands
-        run: |
-          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${SERVER_IP} "\
-            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} && \
-            docker pull ${DOCKERHUB_USERNAME}/${imagename}:${imageTag} && \
-            docker stop ${CONTAINER_NAME} || true && \
-            docker rm ${CONTAINER_NAME} || true && \
-            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKERHUB_USERNAME}/${imagename}:${imageTag}"
+      - name: Deploy to Server 1
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: $SERVER_IP
+          REMOTE_USER: $REMOTE_USER
+          TARGET: ${{ secrets.TARGET_DIR }}
 
