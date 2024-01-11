@@ -26,6 +26,15 @@ jobs:
 
       - name: Build Noble Django Docker Image
         run: |
+          echo "DOCKERHUB_USERNAME: $DOCKERHUB_USERNAME"
+          echo "DOCKERHUB_PASSWORD: ***"
+          echo "imagename: $imagename"
+          echo "registry: $registry"
+          echo "imageTag: $imageTag"
+          echo "SSH_PRIVATE_KEY: ***"
+          echo "REMOTE_USER: $REMOTE_USER"
+          echo "SERVER_IP: $SERVER_IP"
+          echo "CONTAINER_NAME: $CONTAINER_NAME"
           docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
       - name: OWASP Dependency-Check Scan
