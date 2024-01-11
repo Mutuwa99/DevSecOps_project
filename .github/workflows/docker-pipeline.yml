@@ -37,20 +37,21 @@ jobs:
           echo "CONTAINER_NAME: $CONTAINER_NAME"
           docker build -t ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} .
 
-      # - name: OWASP Dependency-Check Scan
-      #   run: |
-      #     docker run --rm \
-      #       -v $(pwd):/src \
-      #       owasp/dependency-check:latest \
-      #       --scan /src \
-      #       --format "ALL" \
-      #       --project "My Project" \
-      #       --out /tmp/dependency-check-report.html
+      - name: OWASP Dependency-Check Scan
+        run: |
+          docker run --rm \
+            -v $(pwd):/src \
+            owasp/dependency-check:latest \
+            --scan /src \
+            --format "HTML" \
+            --project "My Project"
+
 
 
       - name: Trivy Scan
         run: |
-          docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} --format=json --output=/app/trivy-results.json
+          docker run --rm -v $(pwd):/app -w /app aquasec/trivy ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag} --format=json > trivy-results.json
+
 
       - name: Push Docker Image to Docker Hub
         run: |
