@@ -62,16 +62,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup CodeQL
-        uses: github/codeql-action/setup@v2
-        with:
-          languages: python  # Adjust this based on your project's primary language
-
       - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        run: |
+          docker run --rm \
+            -e CODEQL_ACTION_TOKEN \
+            -v "$(pwd):/usr/src" \
+            -w /usr/src \
+            ghcr.io/github/codeql-action/codeql-bundle:latest \
+            analyze --sarif-format \
+            --output=sarif-codeql.sarif \
+            --repository-root=$(pwd) \
+            /usr/src
+
+      - name: Upload CodeQL scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          # Adjust queries, etc. based on your project needs
-          queries: security-and-quality.qls 
+          sarif_file: 'sarif-codeql.sarif' 
 
   deploy:
     needs: codeql_analysis
