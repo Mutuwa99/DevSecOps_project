@@ -117,7 +117,7 @@ jobs:
         with:
           commit_message: 'Manual approval'
       - name: Wait for Approval
-        if: github.event_name == 'workflow_run'
+        if: always()  # Change the condition here
         uses: actions/github-script@v4
         with:
           script: |
@@ -137,6 +137,7 @@ jobs:
             }
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy:
     needs: manual_approval
     runs-on: ubuntu-latest
