@@ -108,7 +108,7 @@ jobs:
           
 
 
-  deploy:
+  deploy_qa:
     needs: trivy_scan
     runs-on: ubuntu-latest
     environment: 
@@ -136,6 +136,19 @@ jobs:
             docker rm devsecops || true
             docker pull docker.io/mutuwa12/devsecops_github:latest
             docker run -d --name devsecops -p 8000:8000 docker.io/mutuwa12/devsecops_github:latest
+
+  qa_send_notification:
+    needs: deploy_qa
+    if: needs.deploy_qa.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification to repository owner
+        run: |
+          REPO_OWNER=$(jq --raw-output .repository.owner.login "${GITHUB_EVENT_PATH}")
+          NOTIFICATION="Deployment qa completed."
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/notifications"
+          RESPONSE=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -X POST -d "{\"subject\":\"$NOTIFICATION\",\"repository\":\"$REPO_OWNER/$GITHUB_REPOSITORY\"}" "$API_URL")
+          echo "Notification sent to repository owner: $REPO_OWNER"           
             
 
 
