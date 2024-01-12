@@ -105,20 +105,44 @@ jobs:
           else
             echo "No critical vulnerabilities found. Proceeding with the workflow."
           fi   
+          
 
+  manual_approval:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manual Approval
+        id: manual_approval
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Manual approval'
+      - name: Wait for Approval
+        if: github.event_name == 'workflow_run'
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { data } = await github.actions.listJobs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: github.event.workflow_run.id,
+            });
 
+            const job = data.jobs.find(job => job.name === 'manual_approval');
 
+            if (job.conclusion === 'success') {
+              console.log('Manual approval received! Proceeding with the workflow.');
+            } else {
+              console.log('Manual approval pending. Workflow is paused.');
+              process.exit(78); // Exit code 78 pauses the workflow
+            }
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   deploy:
-    needs: trivy_scan
+    needs: manual_approval
     runs-on: ubuntu-latest
 
     steps:
-      - name: Manual approval
-        id: approval
-        run: |
-          echo "Approve the deployment (Comment with 'approve' or 'reject')"
-          echo "::set-output name=approval_status::pending"
-          
+
       - name: Deploy to my serer
         uses: easingthemes/ssh-deploy@main
         env:
