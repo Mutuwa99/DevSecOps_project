@@ -34,12 +34,17 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+      with:
+        upload: true
 
     - name: Upload CodeQL results
       uses: actions/upload-artifact@v2
       with:
         name: codeql-results
-        path: ${{ runner.workspace }}/results
+        path: ${{ runner.workspace }}/.codeql
+
+  # Add additional steps if needed
+
 
 
 
