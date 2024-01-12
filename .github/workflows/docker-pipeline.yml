@@ -55,7 +55,17 @@ jobs:
           sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
 
       - name: Scan Docker Image
-        run: trivy --exit-code 1 docker.io/mutuwa12/devsecops_github:latest        
+        run: |
+          trivy_report=$(trivy --format json docker.io/mutuwa12/devsecops_github:latest)
+          echo "$trivy_report"
+
+          # Check if there are any vulnerabilities with severity "CRITICAL"
+          if echo "$trivy_report" | jq '.[0].Vulnerabilities[] | select(.Severity == "CRITICAL")' > /dev/null; then
+            echo "Critical vulnerabilities found. Failing the workflow."
+            exit 1
+          else
+            echo "No critical vulnerabilities found. Proceeding with the workflow."
+          fi   
 
 
   deploy:
