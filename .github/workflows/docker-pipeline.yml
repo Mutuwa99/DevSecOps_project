@@ -64,10 +64,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stop ${CONTAINER_NAME} || true
-            # docker rm ${CONTAINER_NAME} || true
-            # docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
-            # docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+            docker stop devsecops  || true
+            docker rm devsecops || true
+            docker pull docker.io/mutuwa12/devsecops_github:latest
+            docker run -d --name devsecops -p 8000:8000 docker.io/mutuwa12/devsecops_github:latest
             
 
 
