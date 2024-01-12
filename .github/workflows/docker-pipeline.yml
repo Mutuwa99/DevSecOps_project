@@ -107,40 +107,13 @@ jobs:
           fi   
           
 
-  manual_approval:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Manual Approval
-        id: manual_approval
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 'Manual approval'
-      - name: Wait for Approval
-        if: always()  # Change the condition here
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const { data } = await github.actions.listJobs({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: github.event.workflow_run.id,
-            });
-
-            const job = data.jobs.find(job => job.name === 'manual_approval');
-
-            if (job.conclusion === 'success') {
-              console.log('Manual approval received! Proceeding with the workflow.');
-            } else {
-              console.log('Manual approval pending. Workflow is paused.');
-              process.exit(78); // Exit code 78 pauses the workflow
-            }
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    needs: manual_approval
+    needs: trivy_scan
     runs-on: ubuntu-latest
+    environment: 
+    name: qa
+    url: http://noble-mutuwa.com/
 
     steps:
 
