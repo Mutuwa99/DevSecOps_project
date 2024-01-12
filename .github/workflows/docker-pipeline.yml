@@ -49,16 +49,27 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2 
-      - name: Build & Deploy
+      - name: Deploy to Server 1
+        uses: easingthemes/ssh-deploy@main
         env:
-            PRIVATE_KEY: ${{ env.SSH_PRIVATE_KEY }}
-            HOSTNAME: ${{env.SERVER_IP}}
-            USER_NAME: ${{env.REMOTE_USER}}
-      
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i {$SSH_PRIVATE_KEY} ${REMOTE_USER}@${SERVER_IP} '
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo apt-get -y update
+            sudo apt-get install -y apache2
+            sudo systemctl start apache2
+            sudo systemctl enable apache2
+            cd home
+            sudo mv * /var/www/html
 
 
 
