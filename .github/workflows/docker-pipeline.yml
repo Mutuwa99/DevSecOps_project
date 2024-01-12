@@ -8,42 +8,19 @@ on:
 jobs:
 
   codeql_scan:
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'python' ]
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
-        upload: true
+        category: "/language:${{matrix.language}}"
 
-    - name: Upload CodeQL results
-      uses: actions/upload-artifact@v2
-      with:
-        name: codeql-results
-        path: ${{ runner.workspace }}/.codeql
 
-  # Add additional steps if needed
+        - name: Upload CodeQL results
+          uses: actions/upload-artifact@v2
+          with:
+            name: codeql-results
+            path: ${{ runner.workspace }}/.codeql
+
+      # Add additional steps if needed
 
 
 
