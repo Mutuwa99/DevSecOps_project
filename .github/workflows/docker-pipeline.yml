@@ -24,11 +24,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install bandit
 
-      - name: Run Bandit Analysis
-        run: bandit -r . -f json -o bandit-results.json
+      - name: Run Bandit
+        run: |
+          bandit_output=$(bandit -r . -f json)
+          echo "$bandit_output"
+
+          # Check if there are any vulnerabilities with severity "CRITICAL"
+          if echo "$bandit_output" | jq '.results[] | select(.issue_severity == "CRITICAL")' > /dev/null; then
+            echo "Critical vulnerabilities found. Failing the workflow."
+            exit 1
+          else
+            echo "No critical vulnerabilities found. Proceeding with the workflow."
+          fi
+
 
 
   build:
+    needs: code_analysis
     runs-on: ubuntu-latest
 
     env:
