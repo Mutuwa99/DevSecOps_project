@@ -42,6 +42,21 @@ jobs:
           echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
           docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
+  trivy_scan:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Trivy
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+
+      - name: Scan Docker Image
+        run: trivy --exit-code 1 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}        
+
 
   deploy:
     needs: build
@@ -49,7 +64,7 @@ jobs:
 
     steps:
 
-      - name: Deploy to Server 1
+      - name: Deploy to my serer
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
