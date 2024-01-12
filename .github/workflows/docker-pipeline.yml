@@ -64,10 +64,11 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stop ${CONTAINER_NAME} || true
-            docker rm ${CONTAINER_NAME} || true
-            docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
-            docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${SERVER_IP} "
+              docker stop ${CONTAINER_NAME} || true
+              docker rm ${CONTAINER_NAME} || true
+              docker pull ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
+              docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
             
 
 
