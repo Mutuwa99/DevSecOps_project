@@ -7,47 +7,24 @@ on:
 
 jobs:
 
-  code_analysis:
+  codeql_scan:
+    needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code Mutuwa code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Set up CodeQL
+        uses: github/codeql-action/setup@v1
         with:
-          python-version: 3.8
+          languages: python
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install bandit
-
-      - name: Run Bandit
-        run: |
-          bandit_output=$(bandit -r . -f json)
-          echo "$bandit_output"
-
-          # Check if Bandit command failed
-          if [ $? -ne 0 ]; then
-            echo "Bandit command failed. Failing the workflow."
-            exit 1
-          fi
-
-          # Check if there are any vulnerabilities with severity "CRITICAL"
-          if echo "$bandit_output" | jq '.results[] | select(.issue_severity == "CRITICAL")' > /dev/null; then
-            echo "Critical vulnerabilities found. Failing the workflow."
-            exit 1
-          else
-            echo "No critical vulnerabilities found. Proceeding with the workflow."
-          fi
-
-
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v1
 
 
   build:
-    needs: code_analysis
+    needs: codeql_scan
     runs-on: ubuntu-latest
 
     env:
