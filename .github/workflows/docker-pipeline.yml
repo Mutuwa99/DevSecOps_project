@@ -15,9 +15,10 @@ jobs:
 
       - name: Install CodeQL CLI
         run: |
-          wget https://github.com/github/codeql-cli-binaries/releases/download/codeql-v2.7.0/codeql-2.7.0-linux64.tar.gz
-          tar xzf codeql-2.7.0-linux64.tar.gz
+          wget https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-bundle.tar.gz
+          tar xzf codeql-bundle.tar.gz
           export PATH=$PWD/codeql:$PATH
+
 
       - name: Run CodeQL analysis
         run: |
