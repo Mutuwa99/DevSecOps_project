@@ -112,8 +112,8 @@ jobs:
     needs: trivy_scan
     runs-on: ubuntu-latest
     environment: 
-    name: qa
-    url: http://noble-mutuwa.com/
+      name: qa
+      url: http://noble-mutuwa.com/
 
     steps:
 
