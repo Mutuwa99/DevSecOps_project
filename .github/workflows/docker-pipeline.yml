@@ -55,11 +55,11 @@ jobs:
           sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
 
       - name: Scan Docker Image
-        run: trivy --exit-code 1 ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}        
+        run: trivy --exit-code 1 docker.io/mutuwa12/devsecops_github:latest        
 
 
   deploy:
-    needs: build
+    needs: trivy_scan
     runs-on: ubuntu-latest
 
     steps:
