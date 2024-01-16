@@ -9,7 +9,7 @@ jobs:
 
   codeql_scan:
     name: Analyze
-    # Consider using larger runners for possible analysis time improvements.
+    # Consider using larger runners for possible analysis time improvements..
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
