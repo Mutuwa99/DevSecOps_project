@@ -1,4 +1,4 @@
-name: mutuwa_devseopcgghh
+name:  docker CICD
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
 
-  build:
+  build_docker_image:
     needs: codeql_scan
     runs-on: ubuntu-latest
 
@@ -73,7 +73,7 @@ jobs:
           docker push ${registry}/${DOCKERHUB_USERNAME}/${imagename}:${imageTag}
 
   trivy_scan:
-    needs: build
+    needs: build_docker_image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -98,7 +98,7 @@ jobs:
           fi   
           
 
-  deploy_qa:
+  deploy_to_server:
     needs: trivy_scan
     runs-on: ubuntu-latest
     environment: 
