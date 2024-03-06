@@ -128,8 +128,8 @@ jobs:
             docker run -d --name devsecops -p 8000:8000 docker.io/mutuwa12/devsecops_github:latest
 
   qa_send_notification:
-    needs: deploy_qa
-    if: needs.deploy_qa.result == 'success'
+    needs: deploy_to_server
+    if: needs.deploy_to_server.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Send notification to repository owner
