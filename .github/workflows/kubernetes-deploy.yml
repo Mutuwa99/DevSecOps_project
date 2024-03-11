@@ -109,7 +109,6 @@ jobs:
 
     - name: Apply YAML files
       run: |
-        kubectl apply -f /manifests/deployment.yaml
         kubectl apply -f ./deployment.yaml
 
 
