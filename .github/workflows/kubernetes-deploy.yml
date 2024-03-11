@@ -99,7 +99,8 @@ jobs:
 
       - name: Deploy to EKS cluster
         run: |
-          kubectl apply -f deployment.yaml .
+          sed -i.bak "s|DOCKER_IMAGE|${DOCKERHUB_USERNAME}/${imagename}:${imageTag}|g" manifests/deployment.yaml && \
+          kubectl apply -f manifests/deployment.yaml
 
       - name: Verify deployment
         run: |
