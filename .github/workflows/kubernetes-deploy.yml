@@ -107,7 +107,7 @@ jobs:
       - name: Configure Kubernetes client
         uses: silverlyra/setup-aws-eks@v0.1
         with:
-          cluster-name: myk
+          cluster: myk
 
       - name: Deploy service
         run: |
