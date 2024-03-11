@@ -99,6 +99,9 @@ jobs:
 
       - name: Print GitHub workspace path
         run: echo $GITHUB_WORKSPACE
+      - name: List all files in repository
+        run: ls -al $GITHUB_WORKSPACE
+
 
 
 
