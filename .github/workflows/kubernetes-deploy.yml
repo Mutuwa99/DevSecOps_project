@@ -100,7 +100,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        repository: https://github.com/Mutuwa99/DevSecOps_project.git
+        repository: Mutuwa99/DevSecOps_project.git
         ref: main
 
     - name: Apply YAML files
