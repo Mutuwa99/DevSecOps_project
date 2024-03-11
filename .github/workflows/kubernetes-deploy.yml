@@ -97,11 +97,13 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: Change working directory to repository root
-        run: cd $GITHUB_WORKSPACE
+      - name: Configure Kubernetes client
+        uses: silverlyra/setup-aws-eks@v0.1
 
-      - name: List contents of repository root
-        run: ls -al
+      - name: Deploy service
+        run: |
+          kubectl apply -f ./deployment.yml
+          kubectl rollout status -f ./deployment.yml --timeout=15m
 
 
 
