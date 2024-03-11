@@ -97,12 +97,8 @@ jobs:
         run: |
           aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: Deploy to EKS cluster
-        run: |
-          kubectl apply -f ./manifests/deployment.yaml
-          kubectl apply -f /manifests/deployment.yaml
-          kubectl apply -f ./deployment.yaml
+      - name: List files in manifests directory
+        run: ls -al ./
 
-      - name: Verify deployment
-        run: |
-          kubectl get pods
+
+
