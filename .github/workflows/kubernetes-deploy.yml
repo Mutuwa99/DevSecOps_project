@@ -82,34 +82,34 @@ jobs:
     # needs: trivy_scan
     runs-on: ubuntu-latest
     steps:
-      # - name: Install aws-cli
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y awscli
+      - name: Install aws-cli
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
 
-      # - name: Configure AWS credentials
-      #   run: |
-      #     aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws configure set default.region ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_DEFAULT_REGION }}
 
-      # - name: Update kubeconfig with EKS cluster credentials
-      #   run: |
-      #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
+      - name: Update kubeconfig with EKS cluster credentials
+        run: |
+          aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        repository: Mutuwa99/DevSecOps_project.git
-        ref: main
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          repository: Mutuwa99/DevSecOps_project.git
+          ref: main
 
-    - name: List files in checked out repository
-      run: |
-        ls -al
+      - name: List files in checked out repository
+        run: |
+          ls -al
 
-    - name: Apply YAML files
-      run: |
-        kubectl apply -f deployment.yml --validate=false
+      - name: Apply YAML files
+        run: |
+          kubectl apply -f deployment.yml --validate=false
 
 
 
