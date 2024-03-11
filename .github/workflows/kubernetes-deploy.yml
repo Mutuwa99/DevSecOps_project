@@ -97,8 +97,9 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: List files in manifests directory
-        run: ls -al 
+      - name: List Repository Contents
+        run: ls -R
+
 
 
 
