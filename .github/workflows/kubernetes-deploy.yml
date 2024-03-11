@@ -97,8 +97,13 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: List Repository Contents
-        run: ls -R DevSecOps_project
+        - name: Change working directory to repository root
+          run: cd $GITHUB_WORKSPACE
+
+        - name: Deploy to Kubernetes cluster
+          run: |
+            kubectl apply -f ./deployment.yaml
+
 
 
 
