@@ -99,7 +99,7 @@ jobs:
 
       - name: Deploy to EKS cluster
         run: |
-          kubectl apply -f ./deployment.yml
+          kubectl apply -f deployment.yaml .
 
       - name: Verify deployment
         run: |
