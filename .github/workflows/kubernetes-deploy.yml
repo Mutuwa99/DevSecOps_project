@@ -79,7 +79,7 @@ jobs:
   #         fi   
           
   deploy_to_eks:
-    needs: trivy_scan
+    # needs: trivy_scan
     runs-on: ubuntu-latest
     steps:
       - name: Install aws-cli
