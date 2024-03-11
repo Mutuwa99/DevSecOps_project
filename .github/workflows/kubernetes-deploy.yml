@@ -109,7 +109,7 @@ jobs:
 
     - name: Apply YAML files
       run: |
-        kubectl apply -f ./deployment.yml
+        kubectl apply -f  deployment.yml
 
 
 
