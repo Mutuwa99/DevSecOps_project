@@ -97,22 +97,9 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: List all files in repository (including hidden)
+        run: ls -al $GITHUB_WORKSPACE
 
-      - name: Configure Kubernetes client
-        uses: silverlyra/setup-aws-eks@v0.1
-        with:
-          cluster: myk
-
-      - name: Deploy service
-        run: |
-          kubectl apply -f ./*.yaml
-          kubectl rollout status -f ./deployment.yml --timeout=15m
 
 
 
