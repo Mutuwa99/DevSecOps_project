@@ -109,8 +109,9 @@ jobs:
 
     - name: Apply YAML files
       run: |
-        kubectl apply -f DevSecOps_project/manifests/deployment.yaml
-        kubectl apply -f DevSecOps_project/manifests/service.yaml
+        kubectl apply -f /manifests/deployment.yaml
+        kubectl apply -f ./deployment.yaml
+
 
 
 
