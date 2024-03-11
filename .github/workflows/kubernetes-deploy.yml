@@ -111,7 +111,7 @@ jobs:
 
       - name: Deploy service
         run: |
-          kubectl apply -f ./*
+          kubectl apply -f ./*.yaml
           kubectl rollout status -f ./deployment.yml --timeout=15m
 
 
