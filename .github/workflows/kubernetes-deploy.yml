@@ -98,7 +98,7 @@ jobs:
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
       - name: List Repository Contents
-        run: ls -R
+        run: ls -R ./DevSecOps_project/
 
 
 
