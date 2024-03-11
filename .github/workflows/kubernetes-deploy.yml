@@ -97,8 +97,9 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: List all files in repository (including hidden)
-        run: ls -al $GITHUB_WORKSPACE
+      - name: Print GitHub workspace path
+        run: echo $GITHUB_WORKSPACE
+
 
 
 
