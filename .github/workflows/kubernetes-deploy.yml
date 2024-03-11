@@ -100,7 +100,7 @@ jobs:
       - name: Print GitHub workspace path
         run: echo $GITHUB_WORKSPACE
       - name: List all files in repository
-        run: ls -al /home/runner/work/DevSecOps_project/
+        run: ls -al /home/runner/work/DevSecOps_project/DevSecOps_project/*
 
 
 
