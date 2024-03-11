@@ -97,16 +97,17 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          repository: Mutuwa99/DevSecOps_project
-          ref: main
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        repository: https://github.com/Mutuwa99/DevSecOps_project
+        ref: main
 
-      - name: Apply YAML files
-        run: |
-          kubectl apply -f DevSecOps_project/manifests/deployment.yaml
-          kubectl apply -f DevSecOps_project/manifests/service.yaml
+    - name: Apply YAML files
+      run: |
+        kubectl apply -f DevSecOps_project/manifests/deployment.yaml
+        kubectl apply -f DevSecOps_project/manifests/service.yaml
+
 
 
 
