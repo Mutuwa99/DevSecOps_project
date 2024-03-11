@@ -103,6 +103,10 @@ jobs:
         repository: Mutuwa99/DevSecOps_project.git
         ref: main
 
+    - name: List files in checked out repository
+      run: |
+        ls -al
+
     - name: Apply YAML files
       run: |
         kubectl apply -f DevSecOps_project/manifests/deployment.yaml
