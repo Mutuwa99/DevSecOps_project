@@ -97,10 +97,16 @@ jobs:
       #   run: |
       #     aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name myk
 
-      - name: Print GitHub workspace path
-        run: echo $GITHUB_WORKSPACE
-      - name: List all files in repository
-        run: ls -al https://github.com/Mutuwa99/DevSecOps_project/
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          repository: Mutuwa99/DevSecOps_project
+          ref: main
+
+      - name: Apply YAML files
+        run: |
+          kubectl apply -f DevSecOps_project/manifests/deployment.yaml
+          kubectl apply -f DevSecOps_project/manifests/service.yaml
 
 
 
