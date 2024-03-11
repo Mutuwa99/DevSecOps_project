@@ -57,6 +57,9 @@ jobs:
     needs: build_docker_image
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
       - name: Install Trivy
         run: |
           wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
@@ -64,7 +67,7 @@ jobs:
 
       - name: Scan Docker Image
         run: |
-          trivy_report=$(trivy --format json docker.io/${DOCKERHUB_USERNAME}/${imagename}:${imageTag})
+          trivy_report=$(trivy --format json docker.io/mutuwa12/devsecops_github:latest)
           echo "$trivy_report"
 
           # Check if there are any vulnerabilities with severity "CRITICAL"
@@ -73,8 +76,8 @@ jobs:
             exit 1
           else
             echo "No critical vulnerabilities found. Proceeding with the workflow."
-          fi
-
+          fi   
+          
   deploy_to_eks:
     needs: trivy_scan
     runs-on: ubuntu-latest
