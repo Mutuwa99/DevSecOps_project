@@ -22,4 +22,4 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 
 
-#responsible for packaging our app into a docker image .
+#responsible for packaging our app into a docker image ..........
