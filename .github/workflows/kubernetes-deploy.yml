@@ -108,9 +108,6 @@ jobs:
           ls -al
 
       - name: Apply YAML files
-        with:
-          repository: Mutuwa99/DevSecOps_project.git
-          ref: main
         run: |
           kubectl apply -f deployment.yml --validate=false
 
