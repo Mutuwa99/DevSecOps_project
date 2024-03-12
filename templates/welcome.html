@@ -54,9 +54,12 @@
     </style>
 </head>
 <body>
+    
 
     <div class="login-container">
-        <h1>Login final test</h1>
+        <h1>Kubernetes DevSecOps APP</h1>
+        <P> Deployed using Github actions by:</P>
+        <h6>Mutuwa Noble</h6>
         <form action="{% url 'welcome' %}" method="POST">
             {% csrf_token %}
             <input name="username"type="text" placeholder="Username" required>
