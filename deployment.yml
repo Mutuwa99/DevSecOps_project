@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: python-app
+      annotations:
+        force-update: "true"  # Add this annotation to force a rolling update
+  
     spec:
       containers:
       - name: python-app

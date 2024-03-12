@@ -107,9 +107,13 @@ jobs:
         run: |
           ls -al
 
-      - name: Apply YAML files
+      - name: Scale down deployment
         run: |
-          kubectl set image deployment/python-app python-app=mutuwa12/devsecops_github:latest
+          kubectl scale deployment python-app --replicas=0
+
+      - name: Apply updated deployment
+        run: |
+          kubectl apply -f deployment.yml
 
 
 
