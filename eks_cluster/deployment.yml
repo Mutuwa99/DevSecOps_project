@@ -15,6 +15,7 @@ spec:
       containers:
       - name: python-app
         image: mutuwa12/devsecops_github:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
