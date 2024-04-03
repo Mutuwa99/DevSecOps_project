@@ -3,7 +3,7 @@ name: Docker CICD
 on:
   push:
     branches:
-      - main  
+      - replace_with_urs  
 
 jobs:
 
