@@ -4,6 +4,10 @@ metadata:
   name: example-ingress
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - kubernetes.noble-mutuwa.com
+      secretName: kubernetes.noble-mutuwa.com-tls
   rules:
     - host: kubernetes.noble-mutuwa.com
       http:

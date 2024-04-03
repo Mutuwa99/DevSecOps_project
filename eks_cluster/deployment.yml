@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: python-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: python-app
@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: python-app
+      annotations:
+        force-update: "true"  # Add this annotation to force a rolling update
+  
     spec:
       containers:
       - name: python-app

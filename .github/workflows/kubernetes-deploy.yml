@@ -95,7 +95,7 @@ jobs:
 
       - name: Update kubeconfig with EKS cluster credentials
         run: |
-          aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name ingresscluster
+          aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name ingressclusterssl
 
       - name: Checkout repository
         uses: actions/checkout@v2

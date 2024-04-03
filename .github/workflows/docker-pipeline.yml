@@ -53,7 +53,7 @@ jobs:
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       imagename: 'devsecops_github'
       registry: 'docker.io'
-      imageTag: 'latest'
+      imageTag: 'v1'
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} 
       REMOTE_USER: ${{ secrets.USERNAME }}
       SERVER_IP: ${{ secrets.HOST_DNS }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Scan Docker Image
         run: |
-          trivy_report=$(trivy --format json docker.io/mutuwa12/devsecops_github:latest)
+          trivy_report=$(trivy --format json docker.io/mutuwa12/devsecops_github:${imageTag})
           echo "$trivy_report"
 
           # Check if there are any vulnerabilities with severity "CRITICAL"
@@ -98,47 +98,47 @@ jobs:
           fi   
           
 
-  deploy_to_server:
-    needs: trivy_scan
-    runs-on: ubuntu-latest
-    environment: 
-      name: qa
-      url: http://noble-mutuwa.com/
+  # deploy_to_server:
+  #   needs: trivy_scan
+  #   runs-on: ubuntu-latest
+  #   environment: 
+  #     name: qa
+  #     url: http://noble-mutuwa.com/
 
-    steps:
+  #   steps:
 
-      - name: Deploy to my serer
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST_DNS }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+  #     - name: Deploy to my serer
+  #       uses: easingthemes/ssh-deploy@main
+  #       env:
+  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         REMOTE_HOST: ${{ secrets.HOST_DNS }}
+  #         REMOTE_USER: ${{ secrets.USERNAME }}
+  #         TARGET: ${{ secrets.TARGET_DIR }}
 
-      - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker stop devsecops  || true
-            docker rm devsecops || true
-            docker pull docker.io/mutuwa12/devsecops_github:latest
-            docker run -d --name devsecops -p 8000:8000 docker.io/mutuwa12/devsecops_github:latest
+  #     - name: Executing remote ssh commands using ssh key
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.HOST_DNS }}
+  #         username: ${{ secrets.USERNAME }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           docker stop devsecops  || true
+  #           docker rm devsecops || true
+  #           docker pull docker.io/mutuwa12/devsecops_github:latest
+  #           docker run -d --name devsecops -p 8000:8000 docker.io/mutuwa12/devsecops_github:latest
 
-  qa_send_notification:
-    needs: deploy_to_server
-    if: needs.deploy_to_server.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send notification to repository owner
-        run: |
-          REPO_OWNER=$(jq --raw-output .repository.owner.login "${GITHUB_EVENT_PATH}")
-          NOTIFICATION="Deployment qa completed."
-          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/notifications"
-          RESPONSE=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -X POST -d "{\"subject\":\"$NOTIFICATION\",\"repository\":\"$REPO_OWNER/$GITHUB_REPOSITORY\"}" "$API_URL")
-          echo "Notification sent to repository owner: $REPO_OWNER"           
+  # qa_send_notification:
+  #   needs: deploy_to_server
+  #   if: needs.deploy_to_server.result == 'success'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Send notification to repository owner
+  #       run: |
+  #         REPO_OWNER=$(jq --raw-output .repository.owner.login "${GITHUB_EVENT_PATH}")
+  #         NOTIFICATION="Deployment qa completed."
+  #         API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/notifications"
+  #         RESPONSE=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -X POST -d "{\"subject\":\"$NOTIFICATION\",\"repository\":\"$REPO_OWNER/$GITHUB_REPOSITORY\"}" "$API_URL")
+  #         echo "Notification sent to repository owner: $REPO_OWNER"           
             
 
 
